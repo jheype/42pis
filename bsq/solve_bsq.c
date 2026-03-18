@@ -12,88 +12,100 @@
 
 #include "bsq.h"
 
-static int **copy_map(t_map *map)
-static t_max	set_numbers(t_map *map, int **num_map)
-static int	get_cell_value(int	**grid, int i, int j)
-
-int	solve_bsq(t_map *map)
+static void	free_num_map(int **num_map, int rows)
 {
-	t_max	max;
-	int		**num_map;
+	int	i;
 
-	num_map = copy_map(&map);
-	if (!num_map)
-		return (0);
-	max = set_numbers(num_map);
-	draw_square(&map, &max);
-	return (1);
+	i = 0;
+	while (i < rows)
+	{
+		free(num_map[i]);
+		i++;
+	}
+	free(num_map);
 }
 
-static int **copy_map(t_map *map)
+static int	**copy_map(t_map *map)
 {
-	int	*num_map;
+	int	**num_map;
 	int	i;
 	int	j;
 
-	num_map = malloc(sizeof(int *) * map->rows);
+	num_map = (int **)malloc(sizeof(int *) * map->rows);
 	if (!num_map)
-		return NULL;
+		return (NULL);
+	i = 0;
 	while (i < map->rows)
 	{
-		num_map[i] = malloc(sizeof(int) * map->cols);
+		num_map[i] = (int *)malloc(sizeof(int) * map->cols);
 		if (!num_map[i])
+			return (free_num_map(num_map, i), NULL);
+		j = 0;
+		while (j < map->cols)
 		{
-			j = 0;
-			while (j < i)
-			{
-				free(num_map[j]);
-				j++;
-			}
-			free(num_map);
-			return NULL;
+			if (map->grid[i][j] == map->obstacle)
+				num_map[i][j] = 0;
+			else
+				num_map[i][j] = 1;
+			j++;
 		}
 		i++;
 	}
 	return (num_map);
 }
 
-static t_max	set_numbers(t_map *map, int **num_map)
+static int	get_cell_value(int **grid, int i, int j)
 {
-	int		i;
-	int		j;
-	t_max	max;
-	
-	max.value = 0;
+	if (i == 0 || j == 0)
+		return (grid[i][j]);
+	if (grid[i][j] == 0)
+		return (0);
+	return (1 + min3(grid[i - 1][j], grid[i][j - 1], grid[i - 1][j - 1]));
+}
+
+static t_square	set_numbers(t_map *map, int **num_map)
+{
+	t_square		max;
+	int			i;
+	int			j;
+
+	max.size = 0;
+	max.row = 0;
+	max.col = 0;
 	i = 0;
 	while (i < map->rows)
 	{
 		j = 0;
 		while (j < map->cols)
 		{
-			if (map->grid[i][j] == map->obstacle)
-				num_map[i][j] = 0;
-			else if (i == 0 || j == 0)
-				num_map[i][j] = 1;
-			else
-				num_map[i][j] = get_cell_value(num_map, i, j);
-			if (num_map[i][j] > max.value)
+			num_map[i][j] = get_cell_value(num_map, i, j);
+			if (num_map[i][j] > max.size)
 			{
-				max.value = num_map[i][j];
+				max.size = num_map[i][j];
 				max.row = i;
 				max.col = j;
 			}
 			j++;
 		}
+		i++;
 	}
 	return (max);
 }
 
-static int	get_cell_value(int	**grid, int i, int j)
+t_square	solve_bsq(t_map *map)
 {
-	int	value;
-	int	min;
+	t_square	max;
+	int			**num_map;
 
-	min = min3(grid[i - 1][j], grid[i][j - 1], grid[i - 1][j - 1]);
-	value = 1 + min;
-	return (value);
+	num_map = copy_map(map);
+	if (!num_map)
+	{
+		max.size = 0;
+		max.row = 0;
+		max.col = 0;
+		return (max);
+	}
+	max = set_numbers(map, num_map);
+	free_num_map(num_map, map->rows);
+	return (max);
 }

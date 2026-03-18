@@ -12,7 +12,7 @@
 
 #include "bsq.h"
 
-static int	get_line_len(char *content, int start)
+static int	line_len(char *content, int start)
 {
 	int	len;
 
@@ -22,43 +22,36 @@ static int	get_line_len(char *content, int start)
 	return (len);
 }
 
-static void	free_grid(t_map *map, int until)
+static int	valid_char(char c, t_map *map)
 {
-	int	k;
-
-	k = 0;
-	while (k < until)
-		free(map->grid[k++]);
-	free(map->grid);
-	map->grid = NULL;
+	return (c == map->empty || c == map->obstacle);
 }
 
 int	validate_map(char *content, t_map *map, int map_start)
 {
 	int	i;
-	int	j;
-	int	line_count;
+	int	len;
+	int	cur;
+	int	lines;
 
-	map->cols = get_line_len(content, map_start);
-	if (map->cols <= 0)
-		return (0);
 	i = map_start;
-	line_count = 0;
+	len = line_len(content, i);
+	if (len <= 0)
+		return (0);
+	map->cols = len;
+	lines = 0;
 	while (content[i])
 	{
-		j = 0;
-		while (j < map->cols)
-		{
-			if (content[i + j] != map->empty && content[i + j] != map->obstacle)
+		cur = 0;
+		while (content[i + cur] && content[i + cur] != '\n')
+			if (!valid_char(content[i + cur++], map))
 				return (0);
-			j++;
-		}
-		if (content[i + j] != '\n' && content[i + j] != '\0')
+		if (cur != len)
 			return (0);
-		line_count++;
-		i += map->cols + (content[i + map->cols] == '\n');
+		lines++;
+		i += cur + (content[i + cur] == '\n');
 	}
-	return (line_count == map->rows);
+	return (lines == map->rows);
 }
 
 int	build_grid(char *content, t_map *map, int map_start)
@@ -67,25 +60,22 @@ int	build_grid(char *content, t_map *map, int map_start)
 	int	j;
 	int	k;
 
-	map->grid = (char **)malloc(sizeof(char *) * map->rows);
+	map->grid = malloc(sizeof(char *) * map->rows);
 	if (!map->grid)
 		return (0);
 	i = map_start;
 	k = 0;
 	while (k < map->rows)
 	{
-		map->grid[k] = (char *)malloc(sizeof(char) * (map->cols + 1));
+		map->grid[k] = malloc(map->cols + 1);
 		if (!map->grid[k])
-		{
-			free_grid(map, k);
-			return (0);
-		}
+			return (free_map(map), 0);
 		j = 0;
 		while (j < map->cols)
 			map->grid[k][j++] = content[i++];
-		map->grid[k++][j] = '\0';
-		if (content[i] == '\n')
-			i++;
+		map->grid[k][j] = '\0';
+		i += (content[i] == '\n');
+		k++;
 	}
 	return (1);
 }

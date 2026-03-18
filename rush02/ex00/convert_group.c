@@ -3,23 +3,30 @@
 /*                                                        :::      ::::::::   */
 /*   convert_group.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: drocha-h <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: joao-pea <joaopedroa2707@gmail.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/15 15:07:33 by drocha-h          #+#    #+#             */
-/*   Updated: 2026/03/15 15:09:17 by drocha-h         ###   ########.fr       */
+/*   Updated: 2026/03/16 00:26:29 by joao-pea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "rush02.h"
 
+
+// no struct ctx, definimos ctx.first = 1;
+// primeira palavra (ex: "quarenta"): o ponteiro *first é 1.
+// o if (!*first) da false. Ele não imprime espaço, só imprime "quarenta"
+// e muda o *first para 0.
+// segunda palavra (ex: "dois") o ponteiro *first agora é 0.
+// o if (!*first) da verdadeiro, Ele imprime um " ", e depois imprime "dois"
 void	print_word(char *word, int *first)
 {
 	if (!word)
 		return ;
-	if (!*first)
-		write(1, " ", 1);
+	if (!*first) // se nao for a primeira palavra
+		write(1, " ", 1); // imprima um espaço antes da palavra
 	ft_putstr(word);
-	*first = 0;
+	*first = 0; // agora, avise que a primeira palavra já passou
 }
 
 void	print_sep(char *sep)

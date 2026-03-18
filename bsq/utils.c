@@ -18,9 +18,7 @@ int	ft_strlen(char *str)
 
 	i = 0;
 	while (str[i])
-	{
 		i++;
-	}
 	return (i);
 }
 
@@ -29,44 +27,28 @@ int	ft_isdigit(char c)
 	return (c >= '0' && c <= '9');
 }
 
-int	ft_atoi(char *str)
+int	min3(int a, int b, int c)
 {
-	int	i;
-	int	result;
-
-	i = 0;
-	result = 0;
-	while (ft_isdigit(str[i]))
-	{
-		result = result * 10 + (str[i] - '0');
-	}
-	return (result);
+	if (a <= b && a <= c)
+		return (a);
+	if (b <= a && b <= c)
+		return (b);
+	return (c);
 }
 
 void	free_map(t_map *map)
 {
 	int	i;
-
+ 
 	if (!map->grid)
 		return ;
 	i = 0;
 	while (i < map->rows)
 	{
-		free(map->grid[i]);
+		if (map->grid[i])
+			free(map->grid[i]);
 		i++;
 	}
 	free(map->grid);
 	map->grid = NULL;
-}
-
-int	min3(int a, int b, int c)
-{
-	int	min;
-
-	min = a;
-	if (b < min)
-		min = b;
-	if (c < min)
-		min = c;
-	return (min);
 }

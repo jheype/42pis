@@ -12,16 +12,16 @@
 
 #include "bsq.h"
 
-void	draw_square(t_map *map, t_max *max)
+void	draw_square(t_map *map, t_square *max)
 {
 	int	i;
 	int	j;
-	
+
 	i = max->row;
-	while (i > max->row - max->value)
+	while (i > max->row - max->size)
 	{
-		j = max.col;
-		while (j > max->col - max->value)
+		j = max->col;
+		while (j > max->col - max->size)
 		{
 			map->grid[i][j] = map->full;
 			j--;
@@ -36,10 +36,10 @@ void	print_map(t_map *map)
 	int	j;
 
 	i = 0;
-	while(i < map->rows)
+	while (i < map->rows)
 	{
 		j = 0;
-		while (i < map->cols)
+		while (j < map->cols)
 		{
 			write(1, &map->grid[i][j], 1);
 			j++;

@@ -14,7 +14,7 @@
 
 #define CHUNK_SIZE 1024
 
-static void	strncpy(char *dest, char *src, int size)
+static void	copy_bytes(char *dest, char *src, int size)
 {
 	int	i;
 
@@ -26,19 +26,19 @@ static void	strncpy(char *dest, char *src, int size)
 	}
 }
 
-char	*append_chunk(char *content, int old_size, char *buffer, int bytes_read)
+static char	*append_chunk(char *content, int old_size, char *buffer, int bytes_read)
 {
 	char	*new_content;
 
-	new_content = (char *)malloc(sizeof(char) * (old_size + bytes_read * 1));
+	new_content = (char *)malloc(sizeof(char) * (old_size + bytes_read + 1));
 	if (!new_content)
 	{
 		free(content);
 		return (NULL);
 	}
 	if (content)
-		strncpy(new_content, content, old_size);
-	strncpy(new_content + old_size, buffer, bytes_read);
+		copy_bytes(new_content, content, old_size);
+	copy_bytes(new_content + old_size, buffer, bytes_read);
 	new_content[old_size + bytes_read] = '\0';
 	free(content);
 	return (new_content);
@@ -64,7 +64,7 @@ char	*read_file(int fd)
 
 	content = NULL;
 	total_size = 0;
-	byte_reads = read(fd, buffer, CHUNK_SIZE);
+	bytes_read = read(fd, buffer, CHUNK_SIZE);
 	while (bytes_read > 0)
 	{
 		content = append_chunk(content, total_size, buffer, bytes_read);

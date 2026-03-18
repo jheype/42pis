@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   dict_parse.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: drocha-h <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: joao-pea <joaopedroa2707@gmail.com>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/15 15:07:55 by drocha-h          #+#    #+#             */
-/*   Updated: 2026/03/15 15:08:00 by drocha-h         ###   ########.fr       */
+/*   Updated: 2026/03/15 22:40:55 by joao-pea         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "rush02.h"
 
+// filtrar linhas válidas no dict
 int	count_valid_lines(char *content)
 {
 	int	count;
@@ -39,22 +40,23 @@ static int	parse_line_values(char *line, t_dict *dict, int *idx, int colon)
 	char	*key;
 	char	*val;
 
-	raw[0] = ft_substr(line, 0, colon);
-	raw[1] = ft_substr(line, colon + 1, ft_strlen(line) - colon - 1);
+	raw[0] = ft_substr(line, 0, colon); // aqui recebe tudo antes do :
+	raw[1] = ft_substr(line, colon + 1, ft_strlen(line) - colon - 1); // esse recebe o lado direito (tudo depois do :)
 	if (!raw[0] || !raw[1])
 		return (free(raw[0]), free(raw[1]), 0);
-	key = ft_strtrim_spaces(raw[0]);
+	key = ft_strtrim_spaces(raw[0]); // limpa os espaços inuteis ao redor das palavras
 	val = ft_strtrim_spaces(raw[1]);
 	free(raw[0]);
-	free(raw[1]);
+	free(raw[1]); // free em ambos
 	if (!key || !val || !key[0] || !val[0])
 		return (free(key), free(val), 0);
-	dict[*idx].key = key;
+	dict[*idx].key = key; // guarda os ponteiros das strings limpas
 	dict[*idx].value = val;
 	(*idx)++;
 	return (1);
 }
 
+// varre a linha inteira. Se achar um :, ele salva a posição na variaval colon.
 static int	parse_line(char *line, t_dict *dict, int *idx)
 {
 	int	colon;
@@ -76,10 +78,14 @@ static int	parse_line(char *line, t_dict *dict, int *idx)
 	return (parse_line_values(line, dict, idx, colon));
 }
 
+
+// anda pelo conteudo do dicionario caractere por caractere
+// até bater no \n, ai ele manda o ft_substr fazer uma copia exata
+// de tudo o que ficou para trás até o início daquela linha
 int	fill_dict(char *content, t_dict *dict)
 {
-	int		s;
-	int		e;
+	int		s; // start
+	int		e; // end
 	int		idx;
 	char	*line;
 
@@ -109,17 +115,17 @@ t_dict	*parse_dict(char *content, int *size)
 	t_dict	*dict;
 	int		real_sz;
 
-	*size = count_valid_lines(content);
+	*size = count_valid_lines(content); // descobrir quantas linhas úteis existem no arquivo de texto, e guarda no *size
 	if (*size <= 0)
 		return (NULL);
-	dict = (t_dict *)malloc(sizeof(t_dict) * (*size));
+	dict = (t_dict *)malloc(sizeof(t_dict) * (*size)); // aloca a memoria exata para guardar todas as structs juntas.
 	if (!dict)
 		return (NULL);
-	real_sz = fill_dict(content, dict);
+	real_sz = fill_dict(content, dict); // ler o texto e preencher as "mochilas". Essa função guarda o número real dos itens inseridos em real_sz
 	if (!real_sz)
 		return (free_dict(dict, *size), (void *)0);
 	*size = real_sz;
-	if (!has_required_basic_keys(dict, *size))
+	if (!has_required_basic_keys(dict, *size)) // se o dicionario nao tiver o "0", "1", "10", etc.., ela aciona o free_dict par jogar tudo no lixo e retornar erro
 		return (free_dict(dict, *size), (void *)0);
 	return (dict);
 }

@@ -16,7 +16,7 @@ void	free_dict(t_dict *dict, int size)
 {
 	int	i;
 
-	if (!dict)
+	if (!dict) // evitar segfault
 		return ;
 	i = 0;
 	while (i < size)

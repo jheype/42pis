@@ -19,7 +19,7 @@ char	*dict_get_value(t_dict *dict, int size, char *key)
 	i = 0;
 	while (i < size)
 	{
-		if (ft_strcmp(dict[i].key, key) == 0)
+		if (ft_strcmp(dict[i].key, key) == 0) // motor de busca, se forem igual a 0, são identicas.
 			return (dict[i].value);
 		i++;
 	}

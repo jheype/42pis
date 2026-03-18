@@ -14,6 +14,8 @@
 # define BSQ_H
 
 # include <unistd.h>
+# include <stdlib.h>
+# include <fcntl.h>
 
 typedef struct s_map
 {
@@ -25,24 +27,24 @@ typedef struct s_map
 	char	**grid;
 }	t_map;
 
-typedef struct s_max
+typedef struct s_square
 {
-	int	value;
+	int	size;
 	int	row;
 	int	col;
-}	t_max;
+}	t_square;
 
-int		ft_strlen(char *str);
-int		ft_isdigit(char c);
-int		ft_atoi(char *str);
-int		min3(int a, int b, int c);
-void	ft_putstr_fd(char *str, int fd);
-void	free_map(t_map *map);
-int		parse_header(char *content, t_map *map, int *map_start);
-char	*strncpy(char *dest, char *src, int size);
-char	*read_file(int fd);
-int		solve_bsq(t_map *map);
-void	draw_square(t_map *map, t_max *max);
-void	print_map(t_map *map);
+char		*read_file(int fd);
+int			parse_header(char *content, t_map *map, int *map_start);
+int			validate_map(char *content, t_map *map, int map_start);
+int			build_grid(char *content, t_map *map, int map_start);
+t_square	solve_bsq(t_map *map);
+void		draw_square(t_map *map, t_square *max);
+void		print_map(t_map *map);
+void		print_error(void);
+int			ft_strlen(char *str);
+int			ft_isdigit(char c);
+int			min3(int a, int b, int c);
+void		free_map(t_map *map);
 
 #endif

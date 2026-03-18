@@ -8,10 +8,9 @@ SRC = main.c \
 	parse_header.c \
 	validate_map.c \
 	solve_bsq.c \
-	print_map.c \
+	draw_square.c \
 	utils.c \
-	output.c \
-	bsq.h \
+	output.c
 
 OBJ = $(SRC:.c=.o)
 

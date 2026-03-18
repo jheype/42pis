@@ -12,7 +12,7 @@
 
 #include "bsq.h"
 
-void	ft_putstr_fd(char *str, int fd)
+void	print_error(void)
 {
-	write(fd, str, ft_strlen(str));
+	write(1, "map error\n", 10);
 }
